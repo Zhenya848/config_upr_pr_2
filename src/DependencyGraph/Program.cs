@@ -1,4 +1,6 @@
 using DependencyGraphApp.Configuration;
+using DependencyGraphApp.Repositories;
+using DependencyGraphApp.Services;
 
 namespace DependencyGraphApp;
 
@@ -8,10 +10,26 @@ internal static class Program
     {
         try
         {
-            var configPath = GetConfigPath(args);
-            var config = await ConfigLoader.LoadAsync(configPath);
-
+            var config = await ConfigLoader.LoadAsync(GetConfigPath(args));
             PrintConfiguration(config);
+
+            var packages = await LoadPackagesAsync(config);
+            var catalog = new PackageCatalog(packages);
+            var package = catalog.GetRequired(config.PackageName, config.Version);
+
+            Console.WriteLine($"Прямые зависимости пакета {package.Name} ({package.Version}):");
+            if (package.Dependencies.Count == 0)
+            {
+                Console.WriteLine("  (нет зависимостей)");
+            }
+
+            foreach (var dependencySpec in package.Dependencies)
+            {
+                var resolved = catalog.ResolveDependency(dependencySpec);
+                var target = resolved?.Name ?? catalog.GetDependencyLabel(dependencySpec);
+                Console.WriteLine($"  {dependencySpec} -> {target}");
+            }
+
             return 0;
         }
         catch (ConfigurationException exception)
@@ -48,6 +66,16 @@ internal static class Program
             "Использование: DependencyGraph [--config <путь-к-json-конфигурации>]");
     }
 
+    private static Task<IReadOnlyList<Models.PackageRecord>> LoadPackagesAsync(
+        ValidatedConfig config)
+    {
+        IPackageRepository repository = config.UseTestRepository
+            ? new JsonTestRepository(config.TestRepositoryPath)
+            : new AlpineRepository(config.RepositoryUrl);
+
+        return repository.LoadAsync();
+    }
+
     private static void PrintConfiguration(ValidatedConfig config)
     {
         Console.WriteLine("Параметры конфигурации:");
@@ -60,6 +88,7 @@ internal static class Program
         Console.WriteLine($"maxDepth = {config.MaxDepth}");
         Console.WriteLine($"filterSubstring = {DisplayValue(config.FilterSubstring)}");
         Console.WriteLine($"showReverseDependencies = {config.ShowReverseDependencies}");
+        Console.WriteLine();
     }
 
     private static string DisplayValue(string value)
