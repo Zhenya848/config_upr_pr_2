@@ -1,0 +1,11 @@
+{
+  "packageName": "libcurl",
+  "repositoryUrl": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64",
+  "useTestRepository": false,
+  "testRepositoryPath": "",
+  "version": "8.23.0-r0",
+  "outputFileName": "artifacts/graph-libcurl.svg",
+  "maxDepth": 3,
+  "filterSubstring": "",
+  "showReverseDependencies": true
+}

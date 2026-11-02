@@ -1,0 +1,11 @@
+{
+  "packageName": "libssl3",
+  "repositoryUrl": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64",
+  "useTestRepository": false,
+  "testRepositoryPath": "",
+  "version": "3.5.9-r0",
+  "outputFileName": "artifacts/graph-libssl3.svg",
+  "maxDepth": 3,
+  "filterSubstring": "",
+  "showReverseDependencies": true
+}
