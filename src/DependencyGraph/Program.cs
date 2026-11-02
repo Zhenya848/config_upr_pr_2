@@ -18,6 +18,7 @@ internal static class Program
             var graph = BuildGraph(config, catalog);
 
             PrintGraph(graph);
+            PrintReverseDependencies(config, catalog);
             return 0;
         }
         catch (ConfigurationException exception)
@@ -91,6 +92,27 @@ internal static class Program
                 string.Join(", ", graph.CycleEdges.Select(edge =>
                     $"{edge.From} -> {edge.To}")));
         }
+
+        Console.WriteLine();
+    }
+
+    private static void PrintReverseDependencies(
+        ValidatedConfig config,
+        PackageCatalog catalog)
+    {
+        if (!config.ShowReverseDependencies)
+        {
+            return;
+        }
+
+        var finder = new ReverseDependencyFinder(
+            catalog, config.MaxDepth, config.FilterSubstring);
+        var dependencies = finder.Find(config.PackageName);
+
+        Console.WriteLine($"Обратные зависимости пакета {config.PackageName}:");
+        Console.WriteLine(dependencies.Count == 0
+            ? "  (не найдены)"
+            : string.Join(Environment.NewLine, dependencies.Select(item => $"  {item}")));
     }
 
     private static void PrintConfiguration(ValidatedConfig config)
