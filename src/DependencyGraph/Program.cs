@@ -15,21 +15,9 @@ internal static class Program
 
             var packages = await LoadPackagesAsync(config);
             var catalog = new PackageCatalog(packages);
-            var package = catalog.GetRequired(config.PackageName, config.Version);
+            var graph = BuildGraph(config, catalog);
 
-            Console.WriteLine($"Прямые зависимости пакета {package.Name} ({package.Version}):");
-            if (package.Dependencies.Count == 0)
-            {
-                Console.WriteLine("  (нет зависимостей)");
-            }
-
-            foreach (var dependencySpec in package.Dependencies)
-            {
-                var resolved = catalog.ResolveDependency(dependencySpec);
-                var target = resolved?.Name ?? catalog.GetDependencyLabel(dependencySpec);
-                Console.WriteLine($"  {dependencySpec} -> {target}");
-            }
-
+            PrintGraph(graph);
             return 0;
         }
         catch (ConfigurationException exception)
@@ -74,6 +62,35 @@ internal static class Program
             : new AlpineRepository(config.RepositoryUrl);
 
         return repository.LoadAsync();
+    }
+
+    private static Models.DependencyGraph BuildGraph(
+        ValidatedConfig config,
+        PackageCatalog catalog)
+    {
+        var builder = new DependencyGraphBuilder(
+            catalog, config.MaxDepth, config.FilterSubstring);
+
+        return builder.Build(config.PackageName, config.Version);
+    }
+
+    private static void PrintGraph(Models.DependencyGraph graph)
+    {
+        Console.WriteLine($"Граф зависимостей пакета {graph.RootPackage}:");
+        foreach (var node in graph.Nodes)
+        {
+            var dependencies = graph.GetDependencies(node);
+            Console.WriteLine($"  {node} -> " +
+                (dependencies.Count == 0 ? "(нет зависимостей)" :
+                    string.Join(", ", dependencies)));
+        }
+
+        if (graph.CycleEdges.Count > 0)
+        {
+            Console.WriteLine("Обнаружены циклические рёбра: " +
+                string.Join(", ", graph.CycleEdges.Select(edge =>
+                    $"{edge.From} -> {edge.To}")));
+        }
     }
 
     private static void PrintConfiguration(ValidatedConfig config)

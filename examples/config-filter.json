@@ -1,0 +1,11 @@
+{
+  "packageName": "A",
+  "repositoryUrl": "",
+  "useTestRepository": true,
+  "testRepositoryPath": "test-repository.json",
+  "version": "1.0",
+  "outputFileName": "artifacts/graph-filter.svg",
+  "maxDepth": 2,
+  "filterSubstring": "E",
+  "showReverseDependencies": false
+}

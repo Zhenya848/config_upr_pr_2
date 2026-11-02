@@ -1,0 +1,11 @@
+{
+  "packageName": "H",
+  "repositoryUrl": "",
+  "useTestRepository": true,
+  "testRepositoryPath": "test-repository.json",
+  "version": "1.0",
+  "outputFileName": "artifacts/graph-h.svg",
+  "maxDepth": 10,
+  "filterSubstring": "",
+  "showReverseDependencies": false
+}
