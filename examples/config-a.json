@@ -1,0 +1,11 @@
+{
+  "packageName": "curl",
+  "repositoryUrl": "https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64",
+  "useTestRepository": false,
+  "testRepositoryPath": "",
+  "version": "3.24",
+  "outputFileName": "artifacts/graph-alpine.svg",
+  "maxDepth": 6,
+  "filterSubstring": "",
+  "showReverseDependencies": false
+}

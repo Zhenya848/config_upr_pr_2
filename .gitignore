@@ -1,0 +1,19 @@
+# .NET build output
+**/bin/
+**/obj/
+*.user
+*.suo
+*.cache
+
+# Generated diagrams
+artifacts/*.svg
+artifacts/*.d2
+
+# IDE files
+.vs/
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
